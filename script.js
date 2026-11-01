@@ -438,6 +438,17 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
+      // Save Enquiry to Database (Supabase + LocalStorage)
+      if (typeof saveEnquiryToDatabase === 'function') {
+        saveEnquiryToDatabase({
+          name: clientName,
+          phone: clientPhone,
+          service: chosenService,
+          event_date: eventDate,
+          message: userNotes
+        });
+      }
+
       // Format WhatsApp Message
       const chosenService = serviceSelect.value;
       const clientName = nameInput.value.trim();

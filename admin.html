@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Surya Studio Admin - Customer Enquiries & Bookings Dashboard</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='46' fill='%230b0b0e' stroke='%23d4af37' stroke-width='4'/><circle cx='50' cy='50' r='20' fill='%23d4af37'/></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .admin-body {
+      background-color: #07080b;
+      min-height: 100vh;
+      color: #e2e8f0;
+      padding: 40px 20px;
+    }
+    .admin-container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .admin-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 20px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+      margin-bottom: 30px;
+    }
+    .admin-brand h1 {
+      font-family: var(--font-heading);
+      font-size: 1.8rem;
+      background: var(--gold-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 4px;
+    }
+    .admin-brand p {
+      font-size: 0.85rem;
+      color: var(--gold-subtle);
+    }
+    .admin-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    /* Stats grid */
+    .admin-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      margin-bottom: 35px;
+    }
+    .stat-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .stat-box h3 {
+      font-size: 2rem;
+      font-family: var(--font-heading);
+      color: #fff;
+    }
+    .stat-box span {
+      font-size: 0.85rem;
+      color: var(--gold-light);
+    }
+    .stat-box i {
+      font-size: 2rem;
+      color: var(--gold-primary);
+      opacity: 0.6;
+    }
+    /* Login Lock Screen */
+    .lock-screen {
+      max-width: 420px;
+      margin: 80px auto;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 40px 30px;
+      text-align: center;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.8);
+    }
+    .lock-icon {
+      width: 70px;
+      height: 70px;
+      margin: 0 auto 20px;
+      background: rgba(212, 175, 55, 0.1);
+      border: 1px solid var(--gold-primary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      color: var(--gold-primary);
+    }
+    .lock-screen h2 {
+      font-family: var(--font-heading);
+      color: #fff;
+      font-size: 1.6rem;
+      margin-bottom: 8px;
+    }
+    .lock-screen p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+    }
+    .pin-input {
+      width: 100%;
+      padding: 14px;
+      text-align: center;
+      font-size: 1.3rem;
+      letter-spacing: 6px;
+      border-radius: 8px;
+      border: 1px solid var(--border-subtle);
+      background: rgba(255, 255, 255, 0.05);
+      color: #fff;
+      margin-bottom: 16px;
+      outline: none;
+    }
+    .pin-input:focus {
+      border-color: var(--gold-primary);
+    }
+    /* Enquiries Table & Cards */
+    .table-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+    }
+    .table-header {
+      padding: 20px 24px;
+      background: #111218;
+      border-bottom: 1px solid rgba(212, 175, 55, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .table-header h3 {
+      font-size: 1.15rem;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .enquiry-list {
+      display: flex;
+      flex-direction: column;
+    }
+    .enquiry-row {
+      display: grid;
+      grid-template-columns: 1.5fr 1.3fr 1.5fr 1.2fr 2fr 1.2fr;
+      padding: 18px 24px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      align-items: center;
+      gap: 16px;
+      transition: background 0.2s ease;
+    }
+    .enquiry-row:hover {
+      background: rgba(212, 175, 55, 0.04);
+    }
+    .enquiry-row.header-row {
+      background: #0d0e14;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--gold-primary);
+      font-weight: 600;
+    }
+    .client-name {
+      font-weight: 600;
+      color: #fff;
+    }
+    .client-time {
+      font-size: 0.75rem;
+      color: var(--text-dim);
+    }
+    .client-phone a {
+      color: var(--gold-light);
+      text-decoration: underline;
+    }
+    .service-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      background: rgba(212, 175, 55, 0.15);
+      color: var(--gold-light);
+      border: 1px solid rgba(212, 175, 55, 0.3);
+    }
+    .status-select {
+      background: #14151e;
+      border: 1px solid var(--border-subtle);
+      color: #fff;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+    }
+    .row-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .act-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      background: rgba(255, 255, 255, 0.04);
+      color: #fff;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .act-btn.wa:hover {
+      background: #25d366;
+      border-color: #25d366;
+      color: #000;
+    }
+    .act-btn.call:hover {
+      background: var(--gold-primary);
+      border-color: var(--gold-primary);
+      color: #000;
+    }
+    .act-btn.del:hover {
+      background: #ef4444;
+      border-color: #ef4444;
+      color: #fff;
+    }
+    .empty-state {
+      padding: 60px 20px;
+      text-align: center;
+      color: var(--text-muted);
+    }
+    .empty-state i {
+      font-size: 3rem;
+      color: var(--gold-subtle);
+      opacity: 0.5;
+      margin-bottom: 14px;
+    }
+    @media (max-width: 900px) {
+      .enquiry-row.header-row { display: none; }
+      .enquiry-row {
+        grid-template-columns: 1fr;
+        gap: 10px;
+        padding: 16px;
+      }
+    }
+  </style>
+</head>
+<body class="admin-body">
+
+  <!-- LOCK SCREEN (PIN AUTH) -->
+  <div id="lockScreen" class="lock-screen">
+    <div class="lock-icon"><i class="fa-solid fa-lock"></i></div>
+    <h2>Surya Studio Admin</h2>
+    <p>Enter Master PIN to access client bookings database</p>
+    <form id="pinForm">
+      <input type="password" id="pinInput" class="pin-input" placeholder="••••" maxlength="6" autofocus autocomplete="off">
+      <button type="submit" class="btn btn-gold btn-block">
+        <i class="fa-solid fa-key"></i> Unlock Dashboard
+      </button>
+      <p style="margin-top: 15px; font-size: 0.75rem; color: var(--gold-subtle);">Default PIN: <strong>2010</strong></p>
+    </form>
+  </div>
+
+  <!-- DASHBOARD MAIN CONTAINER -->
+  <div id="dashboardApp" class="admin-container" style="display: none;">
+    
+    <!-- Top Header -->
+    <header class="admin-header">
+      <div class="admin-brand">
+        <h1>SURYA STUDIO • ADMIN</h1>
+        <p><i class="fa-solid fa-database"></i> Client Enquiries &amp; Bookings Database</p>
+      </div>
+      <div class="admin-actions">
+        <a href="index.html" class="btn btn-outline btn-sm">
+          <i class="fa-solid fa-arrow-left"></i> Back to Website
+        </a>
+        <button id="exportCsvBtn" class="btn btn-outline btn-sm">
+          <i class="fa-solid fa-file-excel"></i> Export CSV
+        </button>
+        <button id="addTestBtn" class="btn btn-gold-outline btn-sm">
+          <i class="fa-solid fa-plus"></i> Add Test Booking
+        </button>
+        <button id="lockBtn" class="btn btn-outline btn-sm" title="Lock">
+          <i class="fa-solid fa-arrow-right-from-bracket"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- Stats Counter Strip -->
+    <div class="admin-stats">
+      <div class="stat-box">
+        <div>
+          <span class="hl-label">Total Enquiries</span>
+          <h3 id="statTotal">0</h3>
+        </div>
+        <i class="fa-solid fa-users"></i>
+      </div>
+      <div class="stat-box">
+        <div>
+          <span class="hl-label">New Enquiries</span>
+          <h3 id="statNew" style="color: #34d399;">0</h3>
+        </div>
+        <i class="fa-solid fa-envelope-open-text"></i>
+      </div>
+      <div class="stat-box">
+        <div>
+          <span class="hl-label">Confirmed Bookings</span>
+          <h3 id="statConfirmed" style="color: var(--gold-light);">0</h3>
+        </div>
+        <i class="fa-solid fa-calendar-check"></i>
+      </div>
+    </div>
+
+    <!-- Enquiries Table -->
+    <div class="table-card">
+      <div class="table-header">
+        <h3><i class="fa-solid fa-address-book"></i> Recent Customer Bookings</h3>
+        <span id="dbStatusBadge" style="font-size: 0.8rem; color: #34d399;">
+          <i class="fa-solid fa-circle-check"></i> Database Active
+        </span>
+      </div>
+
+      <div class="enquiry-list" id="enquiryListContainer">
+        <!-- Header Row -->
+        <div class="enquiry-row header-row">
+          <div>Client Name &amp; Date</div>
+          <div>Mobile Number</div>
+          <div>Service Required</div>
+          <div>Event Date</div>
+          <div>Message / Requirement</div>
+          <div>Status &amp; Actions</div>
+        </div>
+
+        <!-- Dynamic List Items Injected Here -->
+        <div id="enquiryRows"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- SUPABASE SDK & DATABASE SCRIPT -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="database.js"></script>
+  <script>
+    const MASTER_PIN = "2010"; // Default studio PIN
+
+    const lockScreen = document.getElementById('lockScreen');
+    const dashboardApp = document.getElementById('dashboardApp');
+    const pinForm = document.getElementById('pinForm');
+    const pinInput = document.getElementById('pinInput');
+    const lockBtn = document.getElementById('lockBtn');
+    const enquiryRows = document.getElementById('enquiryRows');
+    const statTotal = document.getElementById('statTotal');
+    const statNew = document.getElementById('statNew');
+    const statConfirmed = document.getElementById('statConfirmed');
+    const exportCsvBtn = document.getElementById('exportCsvBtn');
+    const addTestBtn = document.getElementById('addTestBtn');
+
+    // PIN Authentication
+    pinForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (pinInput.value === MASTER_PIN) {
+        sessionStorage.setItem('surya_admin_auth', 'true');
+        showDashboard();
+      } else {
+        alert("Incorrect PIN! (Default is 2010)");
+        pinInput.value = '';
+      }
+    });
+
+    if (sessionStorage.getItem('surya_admin_auth') === 'true') {
+      showDashboard();
+    }
+
+    function showDashboard() {
+      lockScreen.style.display = 'none';
+      dashboardApp.style.display = 'block';
+      loadAndRenderEnquiries();
+    }
+
+    lockBtn.addEventListener('click', () => {
+      sessionStorage.removeItem('surya_admin_auth');
+      dashboardApp.style.display = 'none';
+      lockScreen.style.display = 'block';
+      pinInput.value = '';
+    });
+
+    // Render Enquiries
+    async function loadAndRenderEnquiries() {
+      enquiryRows.innerHTML = '<div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i><p>Loading database enquiries...</p></div>';
+      
+      const list = await fetchAllEnquiries();
+
+      statTotal.textContent = list.length;
+      statNew.textContent = list.filter(i => (i.status || 'New').toLowerCase() === 'new').length;
+      statConfirmed.textContent = list.filter(i => (i.status || '').toLowerCase() === 'confirmed').length;
+
+      if (!list || list.length === 0) {
+        enquiryRows.innerHTML = `
+          <div class="empty-state">
+            <i class="fa-regular fa-folder-open"></i>
+            <h4>No customer enquiries yet</h4>
+            <p>When customers fill the booking form on your website, they will appear here automatically!</p>
+          </div>
+        `;
+        return;
+      }
+
+      enquiryRows.innerHTML = '';
+      list.forEach(item => {
+        const row = document.createElement('div');
+        row.className = 'enquiry-row';
+
+        const createdDate = item.created_at ? new Date(item.created_at).toLocaleDateString('en-IN', {
+          day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
+        }) : 'Recent';
+
+        const cleanPhone = (item.phone || '').replace(/[^0-9]/g, '');
+        const waMsg = encodeURIComponent(`Hello ${item.name}, thank you for contacting Surya Studio regarding ${item.service}!`);
+
+        row.innerHTML = `
+          <div>
+            <div class="client-name">${escapeHtml(item.name || 'Anonymous')}</div>
+            <div class="client-time"><i class="fa-regular fa-clock"></i> ${createdDate}</div>
+          </div>
+          <div class="client-phone">
+            <strong>${escapeHtml(item.phone || '-')}</strong>
+          </div>
+          <div>
+            <span class="service-badge"><i class="fa-solid fa-camera"></i> ${escapeHtml(item.service || 'Photography')}</span>
+          </div>
+          <div>
+            <span style="font-size: 0.85rem;"><i class="fa-regular fa-calendar"></i> ${escapeHtml(item.event_date || 'Flexible')}</span>
+          </div>
+          <div style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.4;">
+            ${escapeHtml(item.message || 'No additional notes provided.')}
+          </div>
+          <div class="row-actions">
+            <select class="status-select" data-id="${item.id}">
+              <option value="New" ${item.status === 'New' ? 'selected' : ''}>New</option>
+              <option value="Confirmed" ${item.status === 'Confirmed' ? 'selected' : ''}>Confirmed</option>
+              <option value="Completed" ${item.status === 'Completed' ? 'selected' : ''}>Completed</option>
+            </select>
+            <a href="https://wa.me/91${cleanPhone}?text=${waMsg}" target="_blank" class="act-btn wa" title="Chat on WhatsApp">
+              <i class="fa-brands fa-whatsapp"></i>
+            </a>
+            <a href="tel:${cleanPhone}" class="act-btn call" title="Call Client">
+              <i class="fa-solid fa-phone"></i>
+            </a>
+            <button class="act-btn del" data-id="${item.id}" title="Delete">
+              <i class="fa-solid fa-trash-can"></i>
+            </button>
+          </div>
+        `;
+
+        enquiryRows.appendChild(row);
+      });
+
+      // Attach event listeners for status & delete
+      document.querySelectorAll('.status-select').forEach(sel => {
+        sel.addEventListener('change', async (e) => {
+          const id = e.target.getAttribute('data-id');
+          await updateEnquiryStatusInDB(id, e.target.value);
+          loadAndRenderEnquiries();
+        });
+      });
+
+      document.querySelectorAll('.act-btn.del').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+          if (confirm("Are you sure you want to delete this enquiry?")) {
+            const id = e.currentTarget.getAttribute('data-id');
+            await deleteEnquiryFromDB(id);
+            loadAndRenderEnquiries();
+          }
+        });
+      });
+    }
+
+    // Add Test Booking button
+    addTestBtn.addEventListener('click', async () => {
+      const sampleNames = ['Karthik Raja', 'Priya Sundaram', 'Vignesh Kumar', 'Deepa Murugan'];
+      const sampleServices = ['Wedding Photography', '4K Cinema Video', 'Pre-Wedding Shoot', 'Photo Framing'];
+      const randomName = sampleNames[Math.floor(Math.random() * sampleNames.length)];
+      const randomService = sampleServices[Math.floor(Math.random() * sampleServices.length)];
+
+      await saveEnquiryToDatabase({
+        name: randomName,
+        phone: '9876543210',
+        service: randomService,
+        event_date: '2026-12-15',
+        message: 'Looking for full day wedding photography package with album.'
+      });
+
+      alert(`✅ Test booking added for ${randomName}!`);
+      loadAndRenderEnquiries();
+    });
+
+    // Export to CSV
+    exportCsvBtn.addEventListener('click', async () => {
+      const list = await fetchAllEnquiries();
+      if (!list || list.length === 0) {
+        alert("No enquiries to export.");
+        return;
+      }
+
+      let csv = "ID,Name,Phone,Service,Event Date,Message,Status,Date Submitted\n";
+      list.forEach(i => {
+        csv += `"${i.id}","${(i.name||'').replace(/"/g, '""')}","${i.phone||''}","${i.service||''}","${i.event_date||''}","${(i.message||'').replace(/"/g, '""')}","${i.status||'New'}","${i.created_at||''}"\n`;
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute("download", `Surya_Studio_Enquiries_${new Date().toISOString().slice(0,10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    });
+
+    function escapeHtml(str) {
+      return String(str).replace(/[&<>'"]/g, 
+        tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+      );
+    }
+  </script>
+</body>
+</html>
+
