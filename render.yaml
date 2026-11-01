@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: suryastudio
+    env: static
+    buildCommand: ""
+    staticPublishPath: .
+
